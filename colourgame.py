@@ -1,123 +1,79 @@
-# import the modules
 import tkinter
 import random
 
-# list of possible colour.
-colours = ['Red','Blue','Green','Pink','Black',
-		'Yellow','Orange','White','Purple','Brown']
-score = 0
+class Game:
+    colours = ['Red', 'Blue', 'Green', 'Pink', 'Black', 'Yellow', 'Orange', 'White', 'Purple', 'Brown']
+    score = 0
+    timeleft = 60
 
-# the game time left, initially 60 seconds.
-timeleft = 60
+    @classmethod
+    def nextColour(cls):
+        global score
+        global timeleft
 
-# function that will start the game.
-def startGame(event):
-	
-	if timeleft == 60:
-		
-		# start the countdown timer.
-		countdown()
-		
-	# run the function to
-	# choose the next colour.
-	nextColour()
+        if cls.timeleft > 0:
+            cls.e.focus_set()
 
-# Function to choose and
-# display the next colour.
-def nextColour():
+            # Check if the colour typed matches the displayed colour
+            if cls.e.get().lower() == cls.colours[1].lower():
+                cls.score += 1
 
-	# use the globally declared 'score'
-	# and 'play' variables above.
-	global score
-	global timeleft
+            cls.e.delete(0, tkinter.END)
+            random.shuffle(cls.colours)
+            cls.label.config(fg=str(cls.colours[1]), text=str(cls.colours[0]))
+            cls.scoreLabel.config(text="Score: " + str(cls.score))
 
-	# if a game is currently in play
-	if timeleft > 0:
+    @classmethod
+    def countdown(cls):
+        global timeleft
 
-		# make the text entry box active.
-		e.focus_set()
+        if cls.timeleft > 0:
+            cls.timeleft -= 1
+            cls.timeLabel.config(text="Time left: " + str(cls.timeleft))
+            cls.timeLabel.after(1000, cls.countdown)
 
-		# if the colour typed is equal
-		# to the colour of the text
-		if e.get().lower() == colours[1].lower():
-			
-			score += 1
+    @classmethod
+    def startGame(cls, event):
+        if cls.timeleft == 60:
+            cls.countdown()
+        cls.nextColour()
 
-		# clear the text entry box.
-		e.delete(0, tkinter.END)
-		
-		random.shuffle(colours)
-		
-		# change the colour to type, by changing the
-		# text _and_ the colour to a random colour value
-		label.config(fg = str(colours[1]), text = str(colours[0]))
-		
-		# update the score.
-		scoreLabel.config(text = "Score: " + str(score))
+    @classmethod
+    def main(cls):
+        root = tkinter.Tk()
+        root.title("Colour game")
+        root.geometry("675x300")
 
+        # Add a label for the welcome message
+        instructions = tkinter.Label(root, text="WELCOME TO THE COLOUR GAME", font=('Times ', 50, "italic"), fg="purple", bg="pink")
+        instructions.pack()
 
-# Countdown timer function
-def countdown():
+        # Add a label for the instructions
+        instructions = tkinter.Label(root, text="Enter the colour of the word displayed", font=('Times', 32, "italic"))
+        instructions.pack()
 
-	global timeleft
+        # Add a label for the score
+        cls.scoreLabel = tkinter.Label(root, text="Type anything and press enter to start", font=('Times', 32, "italic"))
+        cls.scoreLabel.pack()
 
-	# if a game is in play
-	if timeleft > 0:
+        # Add a label for the time left
+        cls.timeLabel = tkinter.Label(root, text="Time left: " + str(cls.timeleft), font=('Times', 30, "italic", "bold"))
+        cls.timeLabel.pack()
 
-		# decrement the timer.
-		timeleft -= 1
-		
-		# update the time left label
-		timeLabel.config(text = "Time left: "+ str(timeleft))
-								
-		# run the function again after 1 second.
-		timeLabel.after(1000, countdown)
+        # Add a label for displaying the colours
+        cls.label = tkinter.Label(root, font=('Times', 90, "bold"))
+        cls.label.pack()
 
+        # Add an entry box for typing in colours
+        cls.e = tkinter.Entry(root, width=30)
 
-# Driver Code
-# create a tkinter window
-root=tkinter.Tk()
-# set the title
-root.title("Colour game")
+        # Bind the startGame function to the Enter key press event
+        root.bind('<Return>', cls.startGame)
+        cls.e.pack()
+        cls.e.focus_set()
 
-# set the size
-root.geometry("675x300")
-instructions = tkinter.Label(root, text = "WELCOME TOPLAY COLOUR GAME",font = ('Times ', 50,"italic"),fg="purple",bg="pink")
-instructions.pack()
+        # Start the GUI event loop
+        root.mainloop()
 
-
-# add an instructions label
-instructions = tkinter.Label(root, text = "Enter in the colour of the word displayed",font = ('Times', 32,"italic"))
-instructions.pack()
-
-# add a score label
-scoreLabel = tkinter.Label(root, text = "Type anything and press enter to start",font = ('Times', 32,"italic"))
-scoreLabel.pack()
-
-# add a time left label
-timeLabel = tkinter.Label(root, text = "Time left: " +
-			str(timeleft), font = ('Times',30,"italic","bold"))
-				
-timeLabel.pack()
-
-# add a label for displaying the colours
-label = tkinter.Label(root, font = ('Times ', 90,"bold"))
-label.pack()
-
-# add a text entry box for
-# typing in colours
-e = tkinter.Entry(root, width=30)
-
-# run the 'startGame' function
-# when the enter key is pressed
-root.bind('<Return>', startGame)
-e.pack()
-
-# set focus on the entry box
-e.focus_set()
-
-# start the GUI
-
-root.mainloop()
-
-
+if __name__ == '__main__':
+    Game.main()
